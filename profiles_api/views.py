@@ -1,7 +1,8 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, viewsets
 from profiles_api import serializers
+
 
 class HelloAppView(APIView):
     """Hello World View"""
@@ -29,10 +30,7 @@ class HelloAppView(APIView):
             msg = f'Hello {name}'
             return Response({'msg':msg})
         else:
-            return Response(
-                serializer.errors, 
-                status = status.HTTP_400_BAD_REQUEST
-            )
+            return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
     
     def put(self,request, pk=None):
         """Hanlde PUT methods"""
@@ -45,3 +43,51 @@ class HelloAppView(APIView):
     def delete(self, request, pk=None):
         """Delete method for delete"""
         return Response({'msg':"Delete method for Hello"})
+
+
+class HelloViewSet(viewsets.ViewSet):
+    """View Set ------"""
+
+    serializer_class = serializers.HelloSerializer
+
+    def list(self, request):
+        """gets list of objects"""
+        a_viewset = [
+            "Uses actions (list, create, retrieve, update, delete)",
+            "Automatically maps to URL",
+            "less code more features"
+        ]
+
+        return Response({"msg":"Hello from list of HelloViewSet", "a_viewset":a_viewset})
+    
+    def create(self, request):
+        """Create hello msg new"""
+
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            name = serializer.validated_data.get('name')
+            msg = f'Hello {name} bhai.....'
+            return Response({'msg':msg})
+        else:
+            return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
+    
+    def retrieve(self, request, pk=None):
+        """retrive method of HelloViewSet"""
+
+        return Response({'data':"retireved data is this. GET"})
+    
+    def update(self,request, pk=None):
+        """updating object by update mathod"""
+
+        return Response({'data':"updated object in DB PUT"})
+    
+    def partial_update(self,request, pk=None):
+        """object updating partially"""
+
+        return Response({'data':"partially update data PATCH"})
+    
+    def destroy(self, request, pk=None):
+        """object delete by this"""
+
+        return Response({'data':"detele data DELETE"})
